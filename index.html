@@ -1,89 +1,199 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CodePath — أصلح موقعك، وسّعه، وامتلكه</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCraft — تعلّم بناء الويب</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-theme="dark">
 
-  <header class="topbar">
-    <div class="brand">⌨ CodePath</div>
-    <div class="stats">
-      <span id="pointsDisplay">⭐ 0 نقطة</span>
-      <button id="shopBtn" class="btn-shop">🛒 المتجر</button>
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-mark">C</div>
+    <div class="logo-text"><strong>CodeCraft</strong><span>ابنِ موقعك قطعة قطعة</span></div>
+  </div>
+  <div class="header-center">
+    <button id="searchBtn" class="icon-btn" title="بحث (Ctrl+K)">🔍</button>
+    <div class="progress-wrap">
+      <div class="progress-info"><span id="progressLabel">0 / 36</span><span id="levelBadge" class="level-badge">🌱 مبتدئ</span></div>
+      <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
     </div>
-  </header>
+  </div>
+  <div class="header-actions">
+    <div class="stat-chip"><span>⭐</span><b id="pointsDisplay">0</b></div>
+    <div id="authArea"></div>
+    <button id="statsBtn" class="icon-btn" title="إحصائياتي">📊</button>
+    <button id="achieveBtn" class="icon-btn" title="إنجازاتي">🏆</button>
+    <button id="lbBtn" class="icon-btn" title="المتصدرون">🥇</button>
+    <button id="themeToggle" class="icon-btn" title="المظهر">🌓</button>
+    <button id="shopBtn" class="btn-shop">🛒</button>
+    <button id="menuBtn" class="icon-btn menu-btn">☰</button>
+  </div>
+</header>
 
-  <main id="app">
-    <aside id="sidebar">
-      <h2>المسار التعليمي</h2>
-      <div id="lessonList"></div>
-    </aside>
+<main class="app-body">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-title">المسار</div>
+      <input id="lessonSearch" type="text" placeholder="ابحث..." class="search-input">
+    </div>
+    <div id="dailyChallenge"></div>
+    <div id="lessonNav" class="lesson-nav"></div>
+    <div class="sidebar-footer">
+      <button id="cheatBtn" class="btn-ghost">📖 مرجع</button>
+      <button id="dataBtn" class="btn-ghost">💾 بياناتي</button>
+    </div>
+  </aside>
 
-    <section id="workspace">
-      <div id="lessonHeader">
-        <div>
-          <span id="lessonBadge" class="badge"></span>
-          <h1 id="lessonTitle">اختر درساً من القائمة</h1>
+  <section class="workspace">
+    <div id="welcomeScreen" class="welcome">
+      <div class="welcome-inner stagger-item">
+        <div class="welcome-icon">🚀</div>
+        <h1>مرحباً بك في CodeCraft</h1>
+        <p>ستبني <b>مشروعاً شخصياً واحداً</b> من الدرس الأول حتى الأخير — بطاقة تعريفية تصبح جاهزة للنشر. مع أمان حقيقي، أنميشنات، تحديات، ودروس تصل بك إلى الاحتراف.</p>
+        <div class="welcome-stats">
+          <div class="ws-item"><b>36</b><span>درساً</span></div>
+          <div class="ws-item"><b>7</b><span>أقسام</span></div>
+          <div class="ws-item"><b>3</b><span>أنواع مهام</span></div>
+          <div class="ws-item"><b>∞</b><span>إمكانيات</span></div>
+        </div>
+        <button class="btn-primary btn-large" id="startBtn">ابدأ الآن ←</button>
+      </div>
+    </div>
+
+    <div id="lessonScreen" class="lesson-screen hidden">
+      <div class="lesson-header">
+        <div class="lesson-meta">
+          <div class="lesson-breadcrumbs"><span id="lessonSection"></span> / <span id="lessonIndex"></span></div>
+          <div class="lesson-title-row"><span id="lessonBadge" class="task-badge"></span><h1 id="lessonTitle"></h1></div>
+        </div>
+        <div class="lesson-actions-top">
+          <div class="reward-chip"><span>+</span><b id="rewardDisplay">0</b><span>نقطة</span></div>
+          <button id="navPrev" class="icon-btn" title="السابق">→</button>
+          <button id="navNext" class="icon-btn" title="التالي">←</button>
         </div>
       </div>
-
-      <div id="instructionsBox" class="instructions">مرحباً! ابدأ بدرس "الرابط لا يعمل" من القائمة الجانبية.</div>
-
+      <div id="instructionsBox" class="instructions"></div>
       <div class="split">
         <div class="editor-pane">
           <div class="tabs">
-            <button class="tab active" data-lang="html">HTML</button>
-            <button class="tab" data-lang="css">CSS</button>
-            <button class="tab" data-lang="js">JS</button>
+            <button class="tab active" data-lang="html"><span class="dot html-dot"></span>HTML</button>
+            <button class="tab" data-lang="css"><span class="dot css-dot"></span>CSS</button>
+            <button class="tab" data-lang="js"><span class="dot js-dot"></span>JS</button>
+            <div class="tabs-actions"><button id="formatBtn" class="icon-btn-sm" title="تنسيق">✨</button></div>
           </div>
           <textarea id="editor"></textarea>
         </div>
         <div class="preview-pane">
-          <div class="preview-header">المعاينة الحية</div>
-          <iframe id="preview" sandbox="allow-scripts"></iframe>
+          <div class="preview-header">
+            <div class="preview-dots"><span></span><span></span><span></span></div>
+            <div class="preview-label">معاينة حية</div>
+            <button id="openPreview" class="icon-btn-sm" title="فتح">↗</button>
+          </div>
+          <iframe id="preview" sandbox="allow-scripts allow-modals"></iframe>
         </div>
       </div>
-
       <div class="actions">
-        <button id="runBtn" class="btn btn-run">▶ تشغيل</button>
-        <button id="checkBtn" class="btn btn-check">✔ تحقق من الحل</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Modal المتجر -->
-  <div id="storeModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>🛒 متجر التلميحات</h2>
-      <p class="store-balance">رصيدك: <span id="storePoints">0</span> نقطة</p>
-      <div id="storeList"></div>
-      <button id="closeStore" class="btn">إغلاق</button>
-    </div>
-  </div>
-
-  <!-- Modal الشرح -->
-  <div id="whyModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>🎯 سؤال الفهم (+10 نقاط)</h2>
-      <p id="whyQuestion"></p>
-      <textarea id="whyAnswer" placeholder="اشرح بكلماتك... (20 حرفاً على الأقل)" rows="4"></textarea>
-      <div class="modal-actions">
-        <button id="skipWhy" class="btn btn-secondary">تخطي</button>
-        <button id="submitWhy" class="btn btn-check">إرسال (+10)</button>
+        <button id="checkBtn" class="btn-check">✓ تحقق</button>
+        <button id="resetBtn" class="btn-secondary">↺ إعادة</button>
+        <button id="hintBtn" class="btn-hint">💡 تلميح</button>
       </div>
     </div>
-  </div>
+  </section>
+</main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
-  <script src="lessons.js"></script>
-  <script src="app.js"></script>
+<div id="storeModal" class="modal hidden"><div class="modal-content modal-wide">
+  <div class="modal-head"><h2>🛒 التلميحات</h2><button class="modal-close" data-close="storeModal">✕</button></div>
+  <p class="store-balance">رصيدك: <b id="storePoints">0</b> نقطة</p>
+  <div id="storeList"></div>
+</div></div>
+
+<div id="whyModal" class="modal hidden"><div class="modal-content">
+  <div class="modal-head"><h2>🎯 سؤال الفهم — +10 نقاط</h2></div>
+  <p id="whyQuestion" class="why-q"></p>
+  <textarea id="whyAnswer" placeholder="اشرح بكلماتك... (20 حرفاً على الأقل)" rows="4"></textarea>
+  <div class="modal-actions"><button id="submitWhy" class="btn-primary">إرسال (+10)</button><button id="skipWhy" class="btn-secondary">تخطي</button></div>
+</div></div>
+
+<div id="successModal" class="modal hidden"><div class="modal-content success-content">
+  <div class="success-icon" id="successIcon">🎉</div>
+  <h2 id="successTitle">أحسنت!</h2>
+  <p id="successMessage"></p>
+  <button class="btn-primary" data-close="successModal">متابعة</button>
+</div></div>
+
+<div id="statsModal" class="modal hidden"><div class="modal-content">
+  <div class="modal-head"><h2>📊 إحصائياتي</h2><button class="modal-close" data-close="statsModal">✕</button></div>
+  <div id="statsContent"></div>
+</div></div>
+
+<div id="achieveModal" class="modal hidden"><div class="modal-content modal-wide">
+  <div class="modal-head"><h2>🏆 الإنجازات</h2><button class="modal-close" data-close="achieveModal">✕</button></div>
+  <div id="achieveContent"></div>
+</div></div>
+
+<div id="searchModal" class="modal hidden"><div class="modal-content">
+  <div class="modal-head"><h2>🔍 بحث</h2><button class="modal-close" data-close="searchModal">✕</button></div>
+  <input id="searchInput" type="text" placeholder="اسم الدرس..." class="search-input big">
+  <div id="searchResults"></div>
+</div></div>
+
+<div id="cheatModal" class="modal hidden"><div class="modal-content modal-wide">
+  <div class="modal-head"><h2>📖 المرجع</h2><button class="modal-close" data-close="cheatModal">✕</button></div>
+  <div id="cheatContent"></div>
+</div></div>
+
+<div id="dataModal" class="modal hidden"><div class="modal-content">
+  <div class="modal-head"><h2>💾 بياناتي</h2><button class="modal-close" data-close="dataModal">✕</button></div>
+  <p>صدّر تقدمك أو استورده على جهاز آخر.</p>
+  <div class="modal-actions">
+    <button id="exportBtn" class="btn-primary">⬇ تصدير</button>
+    <button id="importBtn" class="btn-secondary">⬆ استيراد</button>
+    <button id="wipeBtn" class="btn-danger">🗑 مسح</button>
+  </div>
+  <input type="file" id="importFile" accept=".json" style="display:none">
+</div></div>
+
+<div id="lbModal" class="modal hidden"><div class="modal-content">
+  <div class="modal-head"><h2>🥇 المتصدرون</h2><button class="modal-close" data-close="lbModal">✕</button></div>
+  <div id="leaderboardContent"></div>
+  <p style="color:var(--muted);font-size:.75rem;margin-top:1rem;text-align:center">لوحة محلية على هذا الجهاز. سجّل الدخول للمشاركة.</p>
+</div></div>
+
+<div id="shortcutModal" class="modal hidden"><div class="modal-content">
+  <div class="modal-head"><h2>⌨ اختصارات</h2><button class="modal-close" data-close="shortcutModal">✕</button></div>
+  <div class="shortcut-list">
+    <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>Enter</kbd><span>تحقق</span></div>
+    <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>K</kbd><span>بحث</span></div>
+    <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>S</kbd><span>تشغيل</span></div>
+    <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>H</kbd><span>تلميح</span></div>
+    <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>R</kbd><span>إعادة</span></div>
+    <div class="shortcut-row"><kbd>Alt</kbd>+<kbd>←/→</kbd><span>تنقل</span></div>
+    <div class="shortcut-row"><kbd>Esc</kbd><span>إغلاق</span></div>
+    <div class="shortcut-row"><kbd>?</kbd><span>هذه النافذة</span></div>
+  </div>
+</div></div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js"></script>
+<script src="lessons.js"></script>
+<script src="modules.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
