@@ -1,172 +1,199 @@
 const LESSONS = [
-  {
-    id: "html-fix",
-    section: "أساسيات HTML",
-    title: "الرابط لا يعمل",
-    type: "fix",
-    instructions: 'في الأسفل يوجد رابط "تواصل معي" لكن عند الضغط عليه لا يحدث شيء. افتح الكود وأصلحه.',
-    starter: {
-      html: '<h1>مرحباً، أنا مطور</h1>\n<p>هذه صفحتي الشخصية</p>\n<a>تواصل معي</a>',
-      css: 'body { font-family: sans-serif; padding: 2rem; }\na { color: #0066cc; font-size: 1.2rem; }',
-      js: ""
-    },
-    testType: "dom",
-    testFn: function(state) {
-      const doc = new DOMParser().parseFromString(state.html, "text/html");
-      const links = Array.from(doc.querySelectorAll("a"));
-      const link = links.find(a => a.textContent.includes("تواصل"));
-      if (!link) return false;
-      const href = link.getAttribute("href");
-      return !!href && href.trim().length > 0;
-    },
-    hints: [
-      { cost: 5, text: "لماذا لا يستجيب الرابط للنقر؟ ما الفرق بينه وبين رابط تعرفه يعمل؟" },
-      { cost: 10, text: "الوسم <a> يحتاج سمة href ليصبح قابلاً للنقر. جرّب إضافة href=\"#\" أو href=\"mailto:test@test.com\"." },
-      { cost: 20, text: "الحل: <a href=\"mailto:you@example.com\">تواصل معي</a> — بدون href، المتصفح لا يعتبره رابطاً." }
-    ],
-    whyQuestion: "لماذا لا يعمل وسم <a> كرابط بدون سمة href؟",
-    reward: 15
-  },
-  {
-    id: "html-extend",
-    section: "أساسيات HTML",
-    title: "أضف فقرة تعريفية",
-    type: "extend",
-    instructions: 'أضف فقرة <p> تحمل class="bio" وتحتوي النص: "أنا مطور ويب مبتدئ وأتعلم كل يوم". يجب أن تظهر تحت العنوان وقبل الرابط.',
-    starter: {
-      html: '<h1>مرحباً، أنا مطور</h1>\n<a href="#">تواصل معي</a>',
-      css: 'body { font-family: sans-serif; padding: 2rem; }\n.bio { color: #555; font-style: italic; }',
-      js: ""
-    },
-    testType: "dom",
-    testFn: function(state) {
-      const doc = new DOMParser().parseFromString(state.html, "text/html");
-      const p = doc.querySelector("p.bio");
-      if (!p) return false;
-      return p.textContent.includes("أنا مطور ويب مبتدئ");
-    },
-    hints: [
-      { cost: 5, text: "أين يجب أن تضع الفقرة الجديدة؟ تحت العنوان، قبل الرابط. ما الوسم الذي يمثل فقرة نصية؟" },
-      { cost: 10, text: "استخدم وسم <p> مع سمة class=\"bio\". ضع الفقرة بين وسم الإغلاق للعنوان ووسم فتح الرابط." },
-      { cost: 20, text: 'الحل: أضف السطر <p class="bio">أنا مطور ويب مبتدئ وأتعلم كل يوم</p> بين <h1> و <a>.' }
-    ],
-    whyQuestion: "لماذا نستخدم class بدل id لعنصر قد يتكرر في الصفحة؟",
-    reward: 20
-  },
-  {
-    id: "css-fix",
-    section: "التنسيق بـ CSS",
-    title: "العنوان غير مرئي",
-    type: "fix",
-    instructions: "العنوان في الصفحة اختفى! لونه أبيض على خلفية بيضاء. افتح تبويب CSS وأصلح اللون ليصبح داكناً وقابلاً للقراءة.",
-    starter: {
-      html: '<h1>مرحباً بالعالم</h1>\n<p>هذا نص تجريبي.</p>',
-      css: 'body { background: white; }\nh1 { color: white; }',
-      js: ""
-    },
-    testType: "runtime",
-    testSource: function() {
-      const h1 = document.querySelector("h1");
-      if (!h1) return false;
-      const color = getComputedStyle(h1).color;
-      // يجب ألا يكون أبيض أو شبه أبيض
-      const match = color.match(/\d+/g);
-      if (!match) return false;
-      const [r, g, b] = match.map(Number);
-      const brightness = (r + g + b) / 3;
-      return brightness < 200;
-    },
-    hints: [
-      { cost: 5, text: "افتح تبويب CSS. ابحث عن القاعدة التي تتحكم بلون h1. ما اللون الحالي؟ هل هو مناسب لخلفية بيضاء؟" },
-      { cost: 10, text: "غيّر value الخاصية color. يمكنك استخدام اسم لون (مثل black أو navy) أو كود hex (مثل #333)." },
-      { cost: 20, text: "الحل: h1 { color: #333; } — لون داكناً على خلفية فاتحة يصبح قابلاً للقراءة." }
-    ],
-    whyQuestion: "لماذا يعتبر التباين (contrast) مهماً في تصميم الويب؟",
-    reward: 20
-  },
-  {
-    id: "css-extend",
-    section: "التنسيق بـ CSS",
-    title: "المسافة بين البطاقات",
-    type: "extend",
-    instructions: "ثلاث بطاقات مصطفة لكنها ملتصقة ببعضها. أضف مسافة 16px بينها — لكن بدون استخدام margin على البطاقات نفسها. استخدم خاصية gap على الحاوية.",
-    starter: {
-      html: '<div class="row">\n  <div class="card">1</div>\n  <div class="card">2</div>\n  <div class="card">3</div>\n</div>',
-      css: '.row { display: flex; }\n.card { padding: 1rem 2rem; background: #38bdf8; color: #0f172a; border-radius: 6px; font-weight: 700; }',
-      js: ""
-    },
-    testType: "runtime",
-    testSource: function() {
-      const row = document.querySelector(".row");
-      if (!row) return false;
-      const gap = getComputedStyle(row).gap;
-      if (!gap) return false;
-      // نقبل أي قيمة gap أكبر من أو تساوي 12px
-      const num = parseFloat(gap);
-      return num >= 12;
-    },
-    hints: [
-      { cost: 5, text: "الحاوية .row لديها display: flex. ما الخاصية التي تضبط المسافة بين العناصر داخل flex container؟" },
-      { cost: 10, text: "أضف إلى .row الخاصية: gap: 16px; — إنها أقصر وأوضح من إضافة margin لكل بطاقة." },
-      { cost: 20, text: "الحل: .row { display: flex; gap: 16px; } — gap يضيف مسافة بين جميع العناصر داخل الحاوية." }
-    ],
-    whyQuestion: "لماذا يفضل استخدام gap بدل margin في flexbox؟",
-    reward: 25
-  },
-  {
-    id: "js-fix",
-    section: "التفاعل بـ JavaScript",
-    title: "الزر لا يستجيب",
-    type: "fix",
-    instructions: 'يوجد زر، لكن عند الضغط عليه لا يحدث شيء. المطلوب: عند النقر، يتغير نصه إلى "تم الضغط". الكود في تبويب JS ناقص — أكمله.',
-    starter: {
-      html: '<button id="btn">اضغطني</button>',
-      css: 'button { padding: 0.8rem 1.5rem; font-size: 1rem; cursor: pointer; }',
-      js: "// اكتب هنا كود JavaScript\n"
-    },
-    testType: "runtime",
-    testSource: function() {
-      const btn = document.getElementById("btn");
-      if (!btn) return false;
-      btn.click();
-      return btn.textContent.trim() === "تم الضغط";
-    },
-    hints: [
-      { cost: 5, text: "كيف نختار عنصراً بواسطة id في JavaScript؟ ثم كيف نستمع لحدث النقر عليه؟" },
-      { cost: 10, text: "استخدم document.getElementById('btn') للوصول للزر، ثم addEventListener('click', ...) لتنفيذ كود عند النقر." },
-      { cost: 20, text: 'الحل: document.getElementById("btn").addEventListener("click", function() { this.textContent = "تم الضغط"; });' }
-    ],
-    whyQuestion: "ما الفرق بين onclick في HTML و addEventListener في JavaScript؟",
-    reward: 25
-  },
-  {
-    id: "js-extend",
-    section: "التفاعل بـ JavaScript",
-    title: "زر الوضع الليلي",
-    type: "extend",
-    instructions: 'أضف زراً بـ id="toggle-theme". عند الضغط عليه، يضيف class="dark-mode" على <body>، وعند الضغط مرة أخرى يزيله (تبديل). أضف تنسيقاً بسيطاً يجعل الخلفية داكنة في وضع الليل.',
-    starter: {
-      html: '<h1>صفحتي</h1>\n<p>جرب الوضع الليلي.</p>',
-      css: 'body { background: white; color: black; transition: 0.3s; padding: 2rem; font-family: sans-serif; }\nbody.dark-mode { background: #0f172a; color: #e2e8f0; }',
-      js: "// أضف الزر والكود هنا\n"
-    },
-    testType: "runtime",
-    testSource: function() {
-      const btn = document.getElementById("toggle-theme");
-      if (!btn) return false;
-      btn.click();
-      const on = document.body.classList.contains("dark-mode");
-      if (!on) return false;
-      btn.click();
-      const off = !document.body.classList.contains("dark-mode");
-      return off;
-    },
-    hints: [
-      { cost: 5, text: "التبديل يعني: إذا كان class موجوداً، احذفه؛ وإلا أضفه. ما الدالة التي تنفذ هذا في سطر واحد؟" },
-      { cost: 10, text: "استخدم classList.toggle('dark-mode') على document.body. أنشئ الزر أولاً في HTML أو في JS." },
-      { cost: 20, text: 'الحل: أنشئ <button id="toggle-theme">الوضع الليلي</button> في HTML، ثم في JS: document.getElementById("toggle-theme").addEventListener("click", () => document.body.classList.toggle("dark-mode"));' }
-    ],
-    whyQuestion: "لماذا يعتبر classList.toggle أنظف من كتابة if/else لإضافة وإزالة class؟",
-    reward: 30
-  }
+  // HTML
+  { id:"h01", section:"أساسيات HTML", type:"create", title:"عنوانك الشخصي",
+    instructions:'اكتب اسمك داخل <code>&lt;h1&gt;</code> بدل "اسمك هنا".',
+    starter:{ html:'<div class="card">\n  <h1>اسمك هنا</h1>\n</div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const h=d.querySelector("h1");return h&&h.textContent.trim().length>2&&h.textContent.trim()!=="اسمك هنا";},
+    hints:["ابحث عن 'اسمك هنا' واستبدلها.","<code>&lt;h1&gt;اسمك&lt;/h1&gt;</code>","<code>&lt;h1&gt;محمد أحمد&lt;/h1&gt;</code>"],
+    whyQuestion:"لماذا نستخدم <h1> للعنوان الرئيسي؟", reward:10 },
+  { id:"h02", section:"أساسيات HTML", type:"extend", title:"نبذة عنك",
+    instructions:'أضف <code>&lt;p class="bio"&gt;</code> بجملة تعريفية (10+ أحرف) تحت العنوان.',
+    starter:{ html:'<div class="card">\n  <h1>اسمك هنا</h1>\n</div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}\n.bio{color:#666;line-height:1.6}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const p=d.querySelector("p.bio");return p&&p.textContent.trim().length>=10;},
+    hints:["<code>&lt;p&gt;</code> فقرة نصية.","<code>&lt;p class=\"bio\"&gt;...&lt;/p&gt;</code>","<code>&lt;p class=\"bio\"&gt;مطور ويب&lt;/p&gt;</code>"],
+    whyQuestion:"ما الفرق بين <p> و <div>؟", reward:15 },
+  { id:"h03", section:"أساسيات HTML", type:"extend", title:"زر التواصل",
+    instructions:'أضف <code>&lt;a href="mailto:you@example.com"&gt;تواصل معي&lt;/a&gt;</code> تحت الفقرة.',
+    starter:{ html:'<div class="card">\n  <h1>اسمك هنا</h1>\n  <p class="bio">مطور</p>\n</div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const a=Array.from(d.querySelectorAll("a")).find(x=>x.textContent.includes("تواصل"));return a&&(a.getAttribute("href")||"").startsWith("mailto:");},
+    hints:["<code>&lt;a&gt;</code> يحتاج <code>href</code>.","<code>href=\"mailto:بريدك\"</code> يفتح البريد.","<code>&lt;a href=\"mailto:me@example.com\"&gt;تواصل معي&lt;/a&gt;</code>"],
+    whyQuestion:"لماذا <a> بدون href نص وليس رابطاً؟", reward:15 },
+  { id:"h04", section:"أساسيات HTML", type:"extend", title:"قائمة مهاراتك",
+    instructions:'أضف <code>&lt;ul&gt;</code> فيها 3 عناصر <code>&lt;li&gt;</code>.',
+    starter:{ html:'<div class="card">\n  <h1>اسمك</h1>\n  <p class="bio">مطور</p>\n</div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const u=d.querySelector("ul");return u&&u.querySelectorAll("li").length>=3;},
+    hints:["<code>&lt;ul&gt;</code> قائمة.","كل عنصر داخل <code>&lt;li&gt;</code>.","<code>&lt;ul&gt;&lt;li&gt;HTML&lt;/li&gt;&lt;li&gt;CSS&lt;/li&gt;&lt;li&gt;JS&lt;/li&gt;&lt;/ul&gt;</code>"],
+    whyQuestion:"متى نستخدم <ul> ومتى <ol>؟", reward:20 },
+  { id:"h05", section:"أساسيات HTML", type:"extend", title:"صورة شخصية",
+    instructions:'أضف <code>&lt;img src="https://picsum.photos/200" alt="صورتي"&gt;</code>.',
+    starter:{ html:'<div class="card">\n  <h1>اسمك</h1>\n</div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}\nimg{width:120px;height:120px;border-radius:50%;object-fit:cover}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const i=d.querySelector("img");return i&&i.getAttribute("src")&&i.getAttribute("alt")&&i.getAttribute("alt").length>3;},
+    hints:["<code>&lt;img&gt;</code> ذاتي الإغلاق.","يحتاج <code>src</code> و <code>alt</code>.","<code>&lt;img src=\"https://picsum.photos/200\" alt=\"صورتي الشخصية\"&gt;</code>"],
+    whyQuestion:"لماذا alt مهم لإمكانية الوصول؟", reward:20 },
+  { id:"h06", section:"أساسيات HTML", type:"extend", title:"بنية دلالية",
+    instructions:'أضف <code>&lt;header&gt;</code> حول العنوان و <code>&lt;main&gt;</code> حول الباقي.',
+    starter:{ html:'<div class="card">\n  <h1>اسمك</h1>\n  <p class="bio">مطور</p>\n  <a href="mailto:me@example.com">تواصل</a>\n</div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}\nheader{margin-bottom:1rem}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");return d.querySelector("header")&&d.querySelector("main")&&d.querySelector("header h1")&&d.querySelector("main p");},
+    hints:["<code>&lt;header&gt;</code> للعنوان.","<code>&lt;main&gt;</code> للمحتوى.","<code>&lt;header&gt;&lt;h1&gt;اسمك&lt;/h1&gt;&lt;/header&gt;&lt;main&gt;&lt;p&gt;...&lt;/p&gt;&lt;/main&gt;</code>"],
+    whyQuestion:"فائدة العناصر الدلالية؟", reward:25 },
+
+  // CSS
+  { id:"c01", section:"التنسيق بـ CSS", type:"fix", title:"العنوان باهت",
+    instructions:'اجعل <code>h1</code> أكبر (<code>font-size: 2rem</code>) وسميكاً (<code>font-weight: 700</code>).',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><p class="bio">مطور</p></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}\n/* نسّق h1 */\n.bio{color:#666}', js:'' },
+    testType:"runtime", testSource:function(){const h=document.querySelector("h1");if(!h)return false;const s=getComputedStyle(h);return parseFloat(s.fontSize)>=30&&parseInt(s.fontWeight)>=700;},
+    hints:["افتح تبويب CSS.","<code>h1 { font-size: 2rem; font-weight: 700; }</code>","<code>font-size</code> الحجم، <code>font-weight</code> السمك."],
+    whyQuestion:"لماذا rem بدل px في الخطوط؟", reward:20 },
+  { id:"c02", section:"التنسيق بـ CSS", type:"extend", title:"لوّن اسمك",
+    instructions:'أعطِ <code>h1</code> لوناً (ليس أسود/أبيض).',
+    starter:{ html:'<div class="card"><h1>اسمك</h1></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}\nh1{font-size:2rem}', js:'' },
+    testType:"runtime", testSource:function(){const h=document.querySelector("h1");if(!h)return false;const c=getComputedStyle(h).color.match(/\d+/g).map(Number);const[r,g,b]=c;return!(r<30&&g<30&&b<30)&&!(r>225&&g>225&&b>225);},
+    hints:["<code>color</code> في CSS.","<code>#6366f1</code> أو <code>crimson</code>.","<code>h1{color:#6366f1}</code>"],
+    whyQuestion:"الفرق بين hex و rgb؟", reward:20 },
+  { id:"c03", section:"التنسيق بـ CSS", type:"extend", title:"بطاقة أنيقة",
+    instructions:'أضف <code>box-shadow</code> و <code>transition</code> للبطاقة، و <code>:hover</code> يرفعها بـ <code>translateY(-4px)</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}', js:'' },
+    testType:"runtime", testSource:function(){const c=document.querySelector(".card");if(!c)return false;const s=getComputedStyle(c);return s.boxShadow&&s.boxShadow!=="none"&&s.transitionDuration&&parseFloat(s.transitionDuration)>0;},
+    hints:["<code>box-shadow: 0 4px 20px rgba(0,0,0,.1)</code>","<code>transition: transform .3s</code>","<code>.card:hover{transform:translateY(-4px)}</code>"],
+    whyQuestion:"لماذا transition؟", reward:25 },
+  { id:"c04", section:"التنسيق بـ CSS", type:"extend", title:"زر التواصل",
+    instructions:'نسّق <code>&lt;a&gt;</code> كزر: خلفية، padding، border-radius، text-decoration: none.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><a href="mailto:x@y.com">تواصل</a></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}', js:'' },
+    testType:"runtime", testSource:function(){const a=document.querySelector("a[href^='mailto']");if(!a)return false;const s=getComputedStyle(a);return(s.textDecorationLine==="none")&&s.backgroundColor!=="rgba(0, 0, 0, 0)"&&parseFloat(s.paddingTop)>0;},
+    hints:["<code>text-decoration:none</code> يزيل الخط.","<code>display:inline-block</code> ضروري.","<code>a{background:#6366f1;color:#fff;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;display:inline-block}</code>"],
+    whyQuestion:"لماذا inline-block؟", reward:25 },
+  { id:"c05", section:"التنسيق بـ CSS", type:"extend", title:"خط مخصص",
+    instructions:'غيّر <code>font-family</code> على <code>body</code> لخط مثل <code>Georgia</code> أو <code>Verdana</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto;text-align:center}', js:'' },
+    testType:"runtime", testSource:function(){const f=getComputedStyle(document.body).fontFamily;return f&&!f.startsWith("sans-serif")&&f!=="sans-serif";},
+    hints:["<code>font-family</code> تقبل قائمة.","<code>font-family: Georgia, serif;</code>","<code>body{font-family:Verdana,sans-serif}</code>"],
+    whyQuestion:"لماذا خطوط احتياطية؟", reward:25 },
+  { id:"c06", section:"التنسيق بـ CSS", type:"extend", title:"خلفية متدرجة",
+    instructions:'استخدم <code>linear-gradient</code> على <code>body</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1></div>', css:'body{font-family:sans-serif;padding:2rem;display:flex;justify-content:center;align-items:center;min-height:100vh}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}', js:'' },
+    testType:"runtime", testSource:function(){return getComputedStyle(document.body).backgroundImage.includes("gradient");},
+    hints:["<code>linear-gradient</code> تأخذ اتجاه وألوان.","<code>linear-gradient(135deg, #667eea, #764ba2)</code>","<code>body{background:linear-gradient(135deg,#667eea,#764ba2)}</code>"],
+    whyQuestion:"linear vs radial؟", reward:30 },
+
+  // Layout
+  { id:"l01", section:"التخطيط", type:"fix", title:"الصف المكسور",
+    instructions:'حوّل <code>.skills</code> إلى <code>display: flex</code>.',
+    starter:{ html:'<div class="card"><div class="skills"><span>A</span><span>B</span><span>C</span></div></div>', css:'body{font-family:sans-serif;padding:2rem}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto}\n.skills span{background:#6366f1;color:#fff;padding:.4rem .9rem;border-radius:20px;margin:.2rem}', js:'' },
+    testType:"runtime", testSource:function(){const s=document.querySelector(".skills");return s&&getComputedStyle(s).display==="flex";},
+    hints:["<code>display: flex</code>.","<code>.skills{display:flex}</code>","بعدها العناصر تصطف أفقياً."],
+    whyQuestion:"flex vs block؟", reward:20 },
+  { id:"l02", section:"التخطيط", type:"extend", title:"مسافة بين المهارات",
+    instructions:'أضف <code>gap: 8px</code> و <code>justify-content: center</code> على <code>.skills</code>.',
+    starter:{ html:'<div class="card"><div class="skills"><span>A</span><span>B</span><span>C</span></div></div>', css:'body{font-family:sans-serif;padding:2rem}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto}\n.skills{display:flex}\n.skills span{background:#6366f1;color:#fff;padding:.4rem .9rem;border-radius:20px}', js:'' },
+    testType:"runtime", testSource:function(){const s=document.querySelector(".skills");if(!s)return false;const st=getComputedStyle(s);return parseFloat(st.gap)>=6&&st.justifyContent==="center";},
+    hints:["<code>gap</code> تضيف مسافة.","<code>justify-content: center</code> يوسّط.","<code>.skills{display:flex;gap:8px;justify-content:center}</code>"],
+    whyQuestion:"gap vs margin؟", reward:25 },
+  { id:"l03", section:"التخطيط", type:"extend", title:"وسّط البطاقة",
+    instructions:'اجعل <code>body</code> يوسّط البطاقة بـ flex و <code>min-height: 100vh</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}', js:'' },
+    testType:"runtime", testSource:function(){const b=getComputedStyle(document.body);return b.display==="flex"&&b.justifyContent==="center"&&b.alignItems==="center"&&parseFloat(b.minHeight)>=500;},
+    hints:["<code>justify-content</code> أفقي، <code>align-items</code> عمودي.","<code>min-height:100vh</code> ضروري.","<code>body{display:flex;justify-content:center;align-items:center;min-height:100vh}</code>"],
+    whyQuestion:"justify vs align؟", reward:30 },
+  { id:"l04", section:"التخطيط", type:"extend", title:"التفاف البطاقات",
+    instructions:'أضف <code>flex-wrap: wrap</code> على <code>.row</code>.',
+    starter:{ html:'<div class="card"><div class="row"><div>A</div><div>B</div><div>C</div><div>D</div><div>E</div></div></div>', css:'body{font-family:sans-serif;padding:2rem}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:320px;margin:auto}\n.row{display:flex;gap:8px}\n.row div{background:#6366f1;color:#fff;padding:.6rem 1rem;border-radius:8px;font-weight:700;flex-shrink:0}', js:'' },
+    testType:"runtime", testSource:function(){const r=document.querySelector(".row");return r&&getComputedStyle(r).flexWrap==="wrap";},
+    hints:["<code>flex-wrap: wrap</code> يسمح بالالتفاف.","القيمة الافتراضية <code>nowrap</code>.","<code>.row{display:flex;gap:8px;flex-wrap:wrap}</code>"],
+    whyQuestion:"متى flex-wrap؟", reward:30 },
+  { id:"l05", section:"التخطيط", type:"extend", title:"شبكة CSS Grid",
+    instructions:'<code>.grid</code> → <code>display:grid</code> + <code>grid-template-columns: repeat(2, 1fr)</code> + <code>gap: 12px</code>.',
+    starter:{ html:'<div class="card"><div class="grid"><div>1</div><div>2</div><div>3</div><div>4</div></div></div>', css:'body{font-family:sans-serif;padding:2rem}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto}\n.grid{display:flex;flex-wrap:wrap}\n.grid > div{background:#6366f1;color:#fff;padding:1rem;border-radius:8px;text-align:center;flex:1 1 40%}', js:'' },
+    testType:"runtime", testSource:function(){const g=document.querySelector(".grid");if(!g)return false;const s=getComputedStyle(g);return s.display==="grid"&&s.gridTemplateColumns.split(" ").length>=2&&parseFloat(s.gap)>=10;},
+    hints:["<code>grid-template-columns</code> تحدد الأعمدة.","<code>repeat(2,1fr)</code> = عمودان.","<code>.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}</code>"],
+    whyQuestion:"grid vs flex؟", reward:35 },
+  { id:"l06", section:"التخطيط", type:"extend", title:"استجابة الشاشات",
+    instructions:'أضف <code>@media (max-width: 600px)</code> يجعل <code>.grid</code> بعمود واحد.',
+    starter:{ html:'<div class="card"><div class="grid"><div>1</div><div>2</div><div>3</div><div>4</div></div></div>', css:'body{font-family:sans-serif;padding:2rem}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto}\n.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}\n.grid > div{background:#6366f1;color:#fff;padding:1rem;border-radius:8px;text-align:center}', js:'' },
+    testType:"runtime", testSource:function(){for(const s of document.styleSheets){try{for(const r of s.cssRules)if(r.type===4&&r.conditionText.includes("600"))return true}catch(e){}}return false;},
+    hints:["<code>@media (max-width:600px){...}</code>","داخلها أعد تعريف <code>.grid</code>.","<code>@media(max-width:600px){.grid{grid-template-columns:1fr}}</code>"],
+    whyQuestion:"max vs min width؟", reward:35 },
+
+  // JS
+  { id:"j01", section:"التفاعل بـ JavaScript", type:"fix", title:"الزر المشلول",
+    instructions:'عند النقر على <code>#hello</code>، غيّر نصه إلى "مرحباً!".',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><button id="hello">اضغطني</button></div>', css:'body{font-family:sans-serif;padding:2rem;display:flex;justify-content:center;align-items:center;min-height:100vh}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}\nbutton{padding:.7rem 1.5rem;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer}', js:'// اكتب هنا\n' },
+    testType:"runtime", testSource:function(){const b=document.getElementById("hello");if(!b)return false;b.click();return b.textContent.trim()==="مرحباً!";},
+    hints:["<code>document.getElementById('hello')</code>.","<code>addEventListener('click',...)</code>.","<code>document.getElementById('hello').addEventListener('click',function(){this.textContent='مرحباً!'})</code>"],
+    whyQuestion:"onclick vs addEventListener؟", reward:30 },
+  { id:"j02", section:"التفاعل بـ JavaScript", type:"extend", title:"الوضع الليلي",
+    instructions:'<code>#theme</code> يبدّل class <code>dark</code> على <code>&lt;body&gt;</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><button id="theme">🌙</button></div>', css:'body{font-family:sans-serif;padding:2rem;background:#f5f5f5;transition:.3s;display:flex;justify-content:center;align-items:center;min-height:100vh}\nbody.dark{background:#1a1a2e;color:#eee}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}\nbody.dark .card{background:#16213e}', js:'// اكتب هنا\n' },
+    testType:"runtime", testSource:function(){const b=document.getElementById("theme");if(!b)return false;b.click();if(!document.body.classList.contains("dark"))return false;b.click();return!document.body.classList.contains("dark");},
+    hints:["<code>classList.toggle('dark')</code>.","<code>document.getElementById('theme').addEventListener('click',()=>document.body.classList.toggle('dark'))</code>","استخدم <code>toggle</code> بدل if/else."],
+    whyQuestion:"toggle vs if/else؟", reward:35 },
+  { id:"j03", section:"التفاعل بـ JavaScript", type:"extend", title:"عدّاد الزوار",
+    instructions:'<code>#inc</code> يزيد <code>#counter</code> بمقدار 1.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><p id="counter" style="font-size:2rem;font-weight:700;color:#6366f1">0</p><button id="inc">+</button></div>', css:'body{font-family:sans-serif;padding:2rem;display:flex;justify-content:center;align-items:center;min-height:100vh}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}\nbutton{padding:.6rem 1.2rem;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:1.2rem}', js:'// اكتب هنا\n' },
+    testType:"runtime", testSource:function(){const b=document.getElementById("inc");const c=document.getElementById("counter");if(!b||!c)return false;b.click();b.click();b.click();return c.textContent.trim()==="3";},
+    hints:["<code>textContent</code> لقراءة وكتابة الرقم.","<code>parseInt(...)</code> لتحويل النص.","<code>c.textContent=parseInt(c.textContent)+1</code>"],
+    whyQuestion:"لماذا parseInt؟", reward:35 },
+  { id:"j04", section:"التفاعل بـ JavaScript", type:"extend", title:"زر النسخ",
+    instructions:'<code>#copy</code> ينسخ نص <code>#email</code> باستخدام <code>navigator.clipboard.writeText</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><p id="email">me@example.com</p><button id="copy">📋</button></div>', css:'body{font-family:sans-serif;padding:2rem;display:flex;justify-content:center;align-items:center;min-height:100vh}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}\nbutton{padding:.7rem 1.5rem;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer}\n#email{background:#f0f0f0;padding:.5rem;border-radius:6px;font-family:monospace}', js:'// اكتب هنا\n' },
+    testType:"runtime", testSource:function(){const b=document.getElementById("copy");if(!b)return false;let c=false;navigator.clipboard.writeText=function(){c=true;return Promise.resolve()};b.click();return c;},
+    hints:["<code>navigator.clipboard.writeText(text)</code>.","احصل على النص من <code>#email</code>.","<code>navigator.clipboard.writeText(document.getElementById('email').textContent)</code>"],
+    whyQuestion:"لماذا Promise؟", reward:40 },
+  { id:"j05", section:"التفاعل بـ JavaScript", type:"extend", title:"التاريخ الحالي",
+    instructions:'املأ <code>#date</code> بتاريخ اليوم بـ <code>new Date().toLocaleDateString("ar")</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><p id="date"></p></div>', css:'body{font-family:sans-serif;padding:2rem;display:flex;justify-content:center;align-items:center;min-height:100vh}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}', js:'// اكتب هنا\n' },
+    testType:"runtime", testSource:function(){const d=document.getElementById("date");return d&&d.textContent.trim().length>5&&/\d/.test(d.textContent);},
+    hints:["<code>new Date()</code> ينشئ تاريخاً.","<code>.toLocaleDateString('ar')</code> ينسّق.","<code>document.getElementById('date').textContent=new Date().toLocaleDateString('ar')</code>"],
+    whyQuestion:"لماذا toLocaleDateString؟", reward:40 },
+  { id:"j06", section:"التفاعل بـ JavaScript", type:"extend", title:"تحقق من الإدخال",
+    instructions:'<code>#greet</code>: إذا كان <code>#name</code> فارغاً اعرض "أدخل اسمك" في <code>#result</code>، وإلا "مرحباً [الاسم]".',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><input id="name" placeholder="اسمك"><button id="greet">تحية</button><p id="result"></p></div>', css:'body{font-family:sans-serif;padding:2rem;display:flex;justify-content:center;align-items:center;min-height:100vh}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;text-align:center}\ninput{padding:.6rem;border:1px solid #ddd;border-radius:6px;width:100%;margin-bottom:.5rem;box-sizing:border-box}\nbutton{padding:.7rem 1.5rem;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer}', js:'// اكتب هنا\n' },
+    testType:"runtime", testSource:function(){const i=document.getElementById("name");const b=document.getElementById("greet");const r=document.getElementById("result");if(!i||!b||!r)return false;b.click();if(!r.textContent.includes("أدخل"))return false;i.value="علي";b.click();return r.textContent.includes("علي");},
+    hints:["<code>input.value</code> للقراءة.","<code>if(input.value.trim()==='')</code>.","<code>r.textContent=i.value.trim()?'مرحباً، '+i.value:'أدخل اسمك'</code>"],
+    whyQuestion:"trim() لماذا؟", reward:45 },
+
+  // Git
+  { id:"g01", section:"Git والنشر", type:"create", title:"أول مستودع Git",
+    instructions:'اكتب أمر <code>git init</code> كتعليق في JS لتهيئة مستودع.',
+    starter:{ html:'<div class="card"><h1>Git</h1></div>', css:'body{font-family:sans-serif;padding:2rem;text-align:center}', js:'// اكتب أمر Git هنا\n' },
+    testType:"runtime", testSource:function(){return(document.querySelector("script")?.textContent||"").includes("git init");},
+    hints:["الأمر هو <code>git init</code>.","بعدها <code>git add .</code> ثم <code>git commit -m \"msg\"</code>.","<code>// git init</code>"],
+    whyQuestion:"git add vs commit؟", reward:25 },
+  { id:"g02", section:"Git والنشر", type:"create", title:"انشر على GitHub Pages",
+    instructions:'اكتب تعليقاً يذكر خطوات النشر على GitHub Pages.',
+    starter:{ html:'<div class="card"><h1>جاهز للنشر!</h1></div>', css:'body{font-family:sans-serif;padding:2rem;text-align:center}', js:'// اكتب خطوات النشر\n' },
+    testType:"runtime", testSource:function(){const j=document.querySelector("script")?.textContent||"";return j.includes("Pages")&&j.includes("GitHub");},
+    hints:["اذهب Settings→Pages.","اختر branch main وroot.","رابطك: <code>USERNAME.github.io/REPO</code>"],
+    whyQuestion:"فائدة GitHub Pages؟", reward:40 },
+
+  // Design
+  { id:"d01", section:"التصميم البصري", type:"extend", title:"نظرية الألوان",
+    instructions:'استخدم CSS variables: <code>--primary</code>, <code>--secondary</code>, <code>--bg</code> في <code>:root</code>.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><p class="bio">مطور</p></div>', css:':root{--primary:#6366f1;--secondary:#8b5cf6;--bg:#f5f5f5}\nbody{background:var(--bg);font-family:sans-serif;padding:2rem;text-align:center}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:400px;margin:auto}\nh1{color:var(--primary)}\n.bio{color:var(--secondary)}', js:'' },
+    testType:"runtime", testSource:function(){const s=getComputedStyle(document.documentElement);return s.getPropertyValue("--primary").trim()&&s.getPropertyValue("--secondary").trim()&&s.getPropertyValue("--bg").trim();},
+    hints:["CSS variables في <code>:root</code>.","<code>var(--name)</code> لاستخدامها.","<code>:root{--primary:#6366f1;--secondary:#8b5cf6;--bg:#f8fafc}</code>"],
+    whyQuestion:"لماذا CSS variables؟", reward:30 },
+
+  // Accessibility
+  { id:"a01", section:"إمكانية الوصول", type:"fix", title:"صورة بلا وصف",
+    instructions:'أضف <code>alt</code> وصفي للصورة.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><img src="https://picsum.photos/200" width="120"></div>', css:'body{font-family:sans-serif;padding:2rem;text-align:center}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const i=d.querySelector("img");return i&&i.getAttribute("alt")&&i.getAttribute("alt").trim().length>=3;},
+    hints:["<code>alt</code> يصف الصورة.","<code>alt=\"صورة شخصية\"</code>","<code>&lt;img src=\"...\" alt=\"صورة شخصية\"&gt;</code>"],
+    whyQuestion:"قارئ الشاشة و alt؟", reward:25 },
+
+  // Performance
+  { id:"p02", section:"الأداء", type:"extend", title:"تحميل الصور بذكاء",
+    instructions:'أضف <code>loading="lazy"</code> و <code>width</code> و <code>height</code> للصورة.',
+    starter:{ html:'<div class="card"><h1>اسمك</h1><img src="https://picsum.photos/400/300" alt="صورة"></div>', css:'body{font-family:sans-serif;padding:2rem}', js:'' },
+    testType:"dom", testFn:s=>{const d=new DOMParser().parseFromString(s.html,"text/html");const i=d.querySelector("img");return i&&i.getAttribute("loading")==="lazy"&&i.getAttribute("width")&&i.getAttribute("height");},
+    hints:["<code>loading=\"lazy\"</code> يؤجل التحميل.","<code>width</code> و <code>height</code> يمنعان layout shift.","<code>&lt;img src=\"...\" loading=\"lazy\" width=\"300\" height=\"200\"&gt;</code>"],
+    whyQuestion:"layout shift؟", reward:30 },
+
+  // Project
+  { id:"p01", section:"المشروع النهائي", type:"create", title:"بطاقتك الكاملة",
+    instructions:'اجمع كل شيء: عنوان ملوّن، نبذة، مهارات في صف، زر بريد، ووضع ليلي يعمل.',
+    starter:{ html:'<div class="card"><h1>اسمك هنا</h1><p class="bio">مطور ويب</p><div class="skills"><span>HTML</span><span>CSS</span><span>JS</span></div><a href="mailto:me@example.com" class="contact">تواصل</a><button id="theme">🌙</button></div>', css:'body{font-family:sans-serif;padding:2rem;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;justify-content:center;align-items:center;min-height:100vh;transition:.3s}\nbody.dark{background:#1a1a2e;color:#eee}\n.card{background:#fff;padding:2rem;border-radius:12px;max-width:420px;text-align:center;box-shadow:0 4px 30px rgba(0,0,0,.15);transition:.3s}\nbody.dark .card{background:#16213e}\nh1{font-size:2rem;color:#6366f1;margin-bottom:.5rem}\n.bio{color:#666;margin-bottom:1rem}\n.skills{display:flex;gap:8px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}\n.skills span{background:#6366f1;color:#fff;padding:.35rem .85rem;border-radius:20px;font-size:.85rem}\n.contact{display:inline-block;background:#6366f1;color:#fff;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600}\n#theme{margin-top:1rem;background:transparent;border:1px solid #ccc;padding:.5rem 1rem;border-radius:8px;cursor:pointer}', js:'// أضف الوضع الليلي\n' },
+    testType:"runtime", testSource:function(){const t=document.getElementById("theme");if(!t)return false;t.click();return document.body.classList.contains("dark");},
+    hints:["كود واحد: toggle.","<code>document.getElementById('theme').addEventListener('click',()=>document.body.classList.toggle('dark'))</code>","جاهزة للنشر!"],
+    whyQuestion:"خطوات النشر؟", reward:60 }
 ];
