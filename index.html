@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodePath — أصلح موقعك، وسّعه، وامتلكه</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">⌨ CodePath</div>
+    <div class="stats">
+      <span id="pointsDisplay">⭐ 0 نقطة</span>
+      <button id="shopBtn" class="btn-shop">🛒 المتجر</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <aside id="sidebar">
+      <h2>المسار التعليمي</h2>
+      <div id="lessonList"></div>
+    </aside>
+
+    <section id="workspace">
+      <div id="lessonHeader">
+        <div>
+          <span id="lessonBadge" class="badge"></span>
+          <h1 id="lessonTitle">اختر درساً من القائمة</h1>
+        </div>
+      </div>
+
+      <div id="instructionsBox" class="instructions">مرحباً! ابدأ بدرس "الرابط لا يعمل" من القائمة الجانبية.</div>
+
+      <div class="split">
+        <div class="editor-pane">
+          <div class="tabs">
+            <button class="tab active" data-lang="html">HTML</button>
+            <button class="tab" data-lang="css">CSS</button>
+            <button class="tab" data-lang="js">JS</button>
+          </div>
+          <textarea id="editor"></textarea>
+        </div>
+        <div class="preview-pane">
+          <div class="preview-header">المعاينة الحية</div>
+          <iframe id="preview" sandbox="allow-scripts"></iframe>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="runBtn" class="btn btn-run">▶ تشغيل</button>
+        <button id="checkBtn" class="btn btn-check">✔ تحقق من الحل</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal المتجر -->
+  <div id="storeModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>🛒 متجر التلميحات</h2>
+      <p class="store-balance">رصيدك: <span id="storePoints">0</span> نقطة</p>
+      <div id="storeList"></div>
+      <button id="closeStore" class="btn">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- Modal الشرح -->
+  <div id="whyModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>🎯 سؤال الفهم (+10 نقاط)</h2>
+      <p id="whyQuestion"></p>
+      <textarea id="whyAnswer" placeholder="اشرح بكلماتك... (20 حرفاً على الأقل)" rows="4"></textarea>
+      <div class="modal-actions">
+        <button id="skipWhy" class="btn btn-secondary">تخطي</button>
+        <button id="submitWhy" class="btn btn-check">إرسال (+10)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <script src="lessons.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
